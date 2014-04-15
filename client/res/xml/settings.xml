@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:robobunny="http://robobunny.com" >
+
+    <PreferenceCategory android:title="Sensitivity" >
+        <com.glyme.airnumkeyboard.SeekBarPreference
+            android:defaultValue="50"
+            android:key="shake_sensitivity"
+            android:max="100"
+            android:summary="Adjust shake sensitivity"
+            android:title="Shake Sensitivity"
+            robobunny:min="1"
+            robobunny:unitsLeft=""
+            robobunny:unitsRight="%" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
