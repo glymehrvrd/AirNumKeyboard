@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.util.Arrays;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -19,6 +21,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.StrictMode;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -29,7 +34,93 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
+	
+	/**
+	 * The {@link android.support.v4.view.PagerAdapter} that will provide
+	 * fragments for each of the sections. We use a
+	 * {@link android.support.v4.app.FragmentPagerAdapter} derivative, which
+	 * will keep every loaded fragment in memory. If this becomes too memory
+	 * intensive, it may be best to switch to a
+	 * {@link android.support.v4.app.FragmentStatePagerAdapter}.
+	 */
+	SectionsPagerAdapter mSectionsPagerAdapter;
+
+	/**
+	 * The {@link ViewPager} that will host the section contents.
+	 */
+	ViewPager mViewPager;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+
+		// Create the adapter that will return a fragment for each of the three
+		// primary sections of the app.
+		mSectionsPagerAdapter = new SectionsPagerAdapter(
+				getSupportFragmentManager());
+
+		// Set up the ViewPager with the sections adapter.
+		mViewPager = (ViewPager) findViewById(R.id.pager);
+		mViewPager.setAdapter(mSectionsPagerAdapter);
+
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	/**
+	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+	 * one of the sections/tabs/pages.
+	 */
+	public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+		public SectionsPagerAdapter(FragmentManager fm) {
+			super(fm);
+		}
+
+		@Override
+		public Fragment getItem(int position) {
+			// getItem is called to instantiate the fragment for the given page.
+			// Return a DummySectionFragment (defined as a static inner class
+			// below) with the page number as its lone argument.
+			Fragment fragment;
+			switch (position) {
+			case 0:
+				fragment = new MainSectionFragment();
+				break;
+			case 1:
+				fragment = new HistorySectionFragment();
+				break;
+			default:
+				fragment = new MainSectionFragment();
+			}
+			return fragment;
+		}
+
+		@Override
+		public int getCount() {
+			// Show 3 total pages.
+			return 2;
+		}
+
+		@Override
+		public CharSequence getPageTitle(int position) {
+			Locale l = Locale.getDefault();
+			switch (position) {
+			case 0:
+				return getString(R.string.title_section1).toUpperCase(l);
+			case 1:
+				return getString(R.string.title_section2).toUpperCase(l);
+			}
+			return null;
+		}
+	}
 
 	public final static int UPDATE_SERVER_IP = 1;
 
@@ -98,28 +189,28 @@ public class MainActivity extends Activity {
 		@Override
 		public void onSensorChanged(SensorEvent event) {
 			if (event.sensor.getType() == android.hardware.Sensor.TYPE_ACCELEROMETER) {
-				// »ñÈ¡µ±Ç°Ê±¿ÌµÄºÁÃëÊý
+				// ï¿½ï¿½È¡ï¿½ï¿½Ç°Ê±ï¿½ÌµÄºï¿½ï¿½ï¿½ï¿½ï¿½
 				long curTime = System.currentTimeMillis();
 
 				// interval between two shakes must be greater than 1.3s
 				if ((lastShakeTime != 0) && (curTime - lastShakeTime < 2000))
 					return;
 
-				// »ñÈ¡¼ÓËÙ¶È´«¸ÐÆ÷µÄÈý¸ö²ÎÊý
+				// ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ù¶È´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				float x = event.values[0];
 				float y = event.values[1];
 				float z = event.values[2];
 
 				float shake = 0;
-				// 100ºÁÃë¼ì²âÒ»´Î
+				// 100ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
 				if ((curTime - lastTime) > 100) {
-					// ¿´ÊÇ²»ÊÇ¸Õ¿ªÊ¼»Î¶¯
+					// ï¿½ï¿½ï¿½Ç²ï¿½ï¿½Ç¸Õ¿ï¿½Ê¼ï¿½Î¶ï¿½
 					if (!(last_x == 0.0f && last_y == 0.0f && last_z == 0.0f))
-						// µ¥´Î»Î¶¯·ù¶È
+						// ï¿½ï¿½ï¿½Î»Î¶ï¿½ï¿½ï¿½ï¿½ï¿½
 						shake = (Math.abs(x - last_x) + Math.abs(y - last_y) + Math.abs(z - last_z))
 								/ (curTime - lastTime) * 10000;
 
-					// ÅÐ¶ÏÊÇ·ñÎªÒ¡¶¯
+					// ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ÎªÒ¡ï¿½ï¿½
 					Log.v("MYTAG", String.format("x:%f y:%f z:%f", x-last_x,y-last_y,z-last_z));
 					if (shake > 1200) {
 						lastTime = 0;

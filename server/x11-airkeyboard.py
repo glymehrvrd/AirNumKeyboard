@@ -38,8 +38,8 @@ def dokey(orikey):
 
 if __name__ == '__main__':
     # show local ip
-    localIP = socket.gethostbyname(socket.gethostname())
-    print 'local ip is %s' % localIP
+    # localIP = socket.gethostbyname(socket.gethostname())
+    # print 'local ip is %s' % localIP
     
     # start respond inspector as a new thread
     thread.start_new_thread(respinspector, ())
